@@ -1,128 +1,85 @@
-# mlflow-tutorial
+# 🚀 Taller Práctico: MLflow + Docker 🐳
+# Del dato al modelo desplegado
 
-![img](assets/cartoon-serve-api.png)
+# Autor: Juan Sebastián Varón Arenas 👨‍💻
 
-I walk through this tutorial and others here on GitHub and on my [Medium blog](https://maria-patterson.medium.com/).  Here is a friend link for open access to the article on Towards Data Science: [*Machine learning model serving for newbies with MLflow*](https://towardsdatascience.com/machine-learning-model-serving-for-newbies-with-mlflow-76f9f0ac3cb2?sk=3fabd570be956c5830591f9ac0fa7991).  I'll always add friend links on my GitHub tutorials for free Medium access if you don't have a paid Medium membership [(referral link)](https://maria-patterson.medium.com/membership).  
+# 1. Descripción 📝
+Este material documenta la ejecución y comprensión del taller práctico MLflow + Docker, basado en el tutorial Machine Learning Model Serving for Newbies with MLflow.
 
-*[edit 2024 Sep: I've updated this GitHub repo significantly since publishing my Towards Data Science article in order to upgrade to mlflow 2.16.2 The scripts have been updated, but the Jupyter notebook is now removed as legacy.]*
+El objetivo es comprender el ciclo de vida completo de un modelo de Machine Learning, desde el entrenamiento hasta el despliegue como servicio de inferencia, garantizando reproducibilidad y facilidad de ejecución mediante Docker. Exploramos conceptos clave de MLOps:
 
-If you find any of this useful, I always appreciate contributions to my Saturday morning [fancy coffee fund](https://github.com/sponsors/mtpatter)!
+📊 Entrenamiento de modelos.
 
-This GitHub repo walks through an example of training a classifier model
-with sklearn and serving the model with mlflow.
-The first section saves the mlflow model locally to disk, and the second
-section shows how to use the mlflow registry for model tracking and versioning.
+📉 Registro de métricas.
 
-## TLDR
+📦 Gestión de versiones.
 
-To skip through and run all components with Docker Compose you can run
-this whole tutorial with the registry:
+🗄️ Model Registry.
 
-```
-docker compose -f docker-compose.yml up --build
-```
+🌐 Model Serving.
 
-You can access the mlflow registry UI on your localhost at port 8000.
+🔗 Inferencia mediante API.
 
-Or to run the tutorial without the registry:
+# 2. ¿Qué es MLflow? 🤖
+MLflow es la plataforma open source para gestionar el ciclo de vida completo de modelos ML, permitiendo rastrear experimentos, almacenar versiones y desplegar modelos de forma consistente.
 
-```
-docker compose -f docker-compose-no-registry.yml up --build
-```
+# Fases principales:
+Tracking 🔍: Registro de parámetros, métricas y artefactos para asegurar la reproducibilidad.
 
-with the model served on port 1234.
+Models 💾: Formato estándar para almacenar modelos independientemente de su implementación.
 
-In either case, you can then make predictions as described in the relevant section below.
+Registry 🏷️: Gestión centralizada de versiones, trazabilidad y control de ambientes.
 
-To run only mlflow with Docker (without using my sklearn classifier example), port forwarding to localhost:8000,
-you can use a compose file with the command below:
+Serving 🚀: Exposición del modelo como servicio REST.
 
-```
-docker compose -f compose-server.yml up --build
-```
+# 3. Ejecución sin Registry 📂
+Implementado mediante clf-train.py y docker-compose-no-registry.yml.
 
-## Serving models with mlflow (no registry)
+# Proceso: Carga del dataset Breast Cancer → StandardScaler + RandomForest → Almacenamiento local (clf-model/).
 
-### Train a model
+✅ Ventajas: Simplicidad, bajo consumo de recursos y fácil comprensión.
 
-The `clf-train.py` script uses the sklearn breast cancer dataset, trains a
-simple random forest classifier, and saves the model to local disk with mlflow.
-Adding the optional flag for writing output test data will split
-the training data first to add an example test data file.
+⚠️ Desventajas: Sin control de versiones, sin historial de experimentos y escalabilidad limitada.
 
-```
-python clf-train.py clf-model --outputTestData test.csv
-```
+# 4. Ejecución con Registry 🏗️
+Implementado mediante clf-train-registry.py y docker-compose.yml. Incorpora un servidor dedicado para gestionar experimentos y versiones.
 
-### Serve model to port 1234
+# Características:
 
-Serve your trained `clf-model` to port 1234.
+Uso de mlflow.set_experiment("my-experiment").
 
-```
-mlflow models serve -m clf-model -p 1234 -h 0.0.0.0 --env-manager local
-```
+Registro de métricas (accuracy_train, accuracy_test).
 
-## Serving models with mlflow (with registry)
+Asignación de alias (@Staging) para despliegue independiente.
 
-### Start an mlflow server for UI on port 8000
+✅ Ventajas: Versionamiento, trazabilidad total, historial y alta capacidad de colaboración.
 
-This uses a sqlite database backend and stores model artifacts
-at the local specified location.
+⚠️ Desventajas: Mayor complejidad y necesidad de gestionar más componentes (Tracking Server).
 
-```
-mlflow server \
---backend-store-uri sqlite:///mlflow.db \
---default-artifact-root ./mlflow-artifact-root \
---host 0.0.0.0 \
---port 8000
-```
+# 5. Acceso al modelo e inferencias 📡
+El modelo se expone como API REST mediante el endpoint POST /invocations.
 
-### Train a model
+Sin Registry: Sirve desde la carpeta local clf-model/.
 
-The `clf-train-registry.py` script uses the sklearn breast cancer dataset, trains a
-simple random forest classifier, overwrites the model predict method to return
-probabilities instead of classes, and saves and registers the model with mlflow.
-The newest model is moved to the mlflow `Staging` alias.
-Adding the optional flag for writing output test data will split
-the training data first to add an example test data file.
+Con Registry: Consulta directa vía models:/clf-model@Staging.
 
-```
-python clf-train-registry.py clf-model "http://localhost:8000" --outputTestData test.csv
-```
+Prueba: Ejecuta ./predict.sh para enviar datos mediante curl y recibir predicciones.
 
-The model is now logged in the mlflow registry and visible in the UI under "my-experiment".
+# 6. Conclusiones 💡
+MLflow es esencial para escalar de experimentos locales a procesos profesionales de MLOps. Mientras que el flujo local es ideal para aprendizaje, el uso del Model Registry es indispensable para la trazabilidad y el trabajo en entornos empresariales.
 
-### Serve model to port 1234
+# 7. Data Lifecycle vs ML Lifecycle 🔄
+El Machine Learning Lifecycle es una extensión natural del Data Lifecycle.
 
-Serve your latest `Staging` version of the trained `clf-model` to port 1234.
+EtapaData      LifecycleML       Lifecycle
 
-```
-export MLFLOW_TRACKING_URI=http://localhost:8000
-mlflow models serve -m models:/clf-model@Staging -p 1234 -h 0.0.0.0 --env-manager local
-```
+Inicio	       Ingestión         Preparación
 
-## Make predictions
+Medio	         Transformación	   Entrenamiento & Evaluación
 
-For inference data in a file called `test.csv`, run the following:
+Final          Consumo           Registro, Despliegue & Inferencia
 
-```
-curl http://localhost:1234/invocations  -H 'Content-Type: text/csv' --data-binary @test.csv
-```
+# El flujo integral que logramos implementar:
+Ingestión ➡️ Transformación ➡️ Entrenamiento ➡️ Evaluación ➡️ Registro ➡️ Despliegue ➡️ Inferencia 🚀
 
-or just run the script below:
-
-```
-./predict.sh test.csv
-```
-
-This returns an array of predicted probabilities.
-
-## Cleaning up
-
-If you're using Compose, when finished, shut down all containers with the following command:
-
-```
-docker compose down
-```
-
-Note well that the compose files mount volumes and write to the local directory.
+# Documentación creada como parte del entrenamiento en MLOps.
