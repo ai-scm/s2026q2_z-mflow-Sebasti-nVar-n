@@ -8,21 +8,7 @@ modelos es, en esencia, una fase avanzada de consumo y transformación de datos.
 
 # 📊 Comparativa: Data Lifecycle vs. ML Lifecycle
 
-# EtapaData                   LifecycleML                 Lifecycle¿Qué                          cambia?
-
-Inicio	                    Ingestión	                  Ingestión + Exploración               Se añade EDA (Exploratory Data Analysis) 
-                                                                                              para entender distribuciones.
-
-Proceso              	      Transformación       	      Preprocesamiento	                    Ahora debe ser reproducible y empaquetado 
-                                                                                              (Pipeline).
-
-Almacenamiento	            Almacenamiento	            Registro de modelo	                  Se guardan artefactos 
-                                                                                              (modelos, métricas, dependencias).
-
-Consumo	                    Consumo	                    Despliegue + Inferencia	              Se convierte en un endpoint REST de tiempo real.
-
- 
-Gobierno	                  Gobernanza	                Gobernanza + MLOps	                  Gestión de lineage, comparación y transiciones.
+<img width="1207" height="170" alt="image" src="https://github.com/user-attachments/assets/f88e0ad2-c217-4b34-a9a9-cc428a616b06" />
 
 
 # ⚙️ ¿Qué se mantiene y qué evoluciona?
