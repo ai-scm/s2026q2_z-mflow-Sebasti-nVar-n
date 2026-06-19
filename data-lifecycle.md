@@ -13,7 +13,7 @@ EtapaData             LifecycleML            Lifecycle¿Qué                    
 Inicio	              Ingestión	             Ingestión + Exploración              Se añade EDA (Exploratory Data Analysis) 
                                                                                   para entender distribuciones.
 
-Proceso             	Transformación       	 Preprocesamiento	                    Ahora debe ser reproducible y empaquetado 
+Proceso              	Transformación       	 Preprocesamiento	                    Ahora debe ser reproducible y empaquetado 
                                                                                   (Pipeline).
 
 Almacenamiento	      Almacenamiento	       Registro de modelo	                  Se guardan artefactos 
