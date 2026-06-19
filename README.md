@@ -1,7 +1,7 @@
 # 🚀 Taller Práctico: MLflow + Docker 🐳
 # Del dato al modelo desplegado
 
-# Autor: Juan Sebastián Varón Arenas 👨‍💻
+# Autor: Sebastián Varón  👨‍💻
 
 # 1. Descripción 📝
 Este material documenta la ejecución y comprensión del taller práctico MLflow + Docker, basado en el tutorial Machine Learning Model Serving for Newbies with MLflow.
